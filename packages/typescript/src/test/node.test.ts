@@ -11,8 +11,16 @@ const NODE_VERSION = parseInt(process.versions.node.split(".")[0]);
 describe("node", () => {
   it("should work with staging", async () => {
     const ff = new FileforgeClient({
-      apiKey: process.env.FilefORGE_API_KEY,
+      apiKey: process.env.FILEFORGE_API_KEY,
       environment: "https://api.staging.Fileforge.com",
+    });
+
+    await ff.getStatus();
+  });
+
+  it("should work with prod", async () => {
+    const ff = new FileforgeClient({
+      apiKey: process.env.FILEFORGE_API_KEY,
     });
 
     await ff.getStatus();
@@ -24,7 +32,7 @@ describe("node", () => {
 
     expect(
       new FileforgeClient({
-        apiKey: process.env.FilefORGE_API_KEY,
+        apiKey: process.env.FILEFORGE_API_KEY,
       }),
     ).toBeInstanceOf(FileforgeClient);
   });
@@ -35,14 +43,14 @@ describe("node", () => {
 
     expect(
       new FileforgeClient({
-        apiKey: process.env.FilefORGE_API_KEY,
+        apiKey: process.env.FILEFORGE_API_KEY,
       }),
     ).toBeInstanceOf(FileforgeClient);
   });
 
   it.skipIf(NODE_VERSION < 20)("should take File", async () => {
     const ff = new FileforgeClient({
-      apiKey: process.env.FilefORGE_API_KEY,
+      apiKey: process.env.FILEFORGE_API_KEY,
     });
 
     await ff.pdf.form.mark(
@@ -58,7 +66,7 @@ describe("node", () => {
     const { File } = await import("@web-std/file");
 
     const ff = new FileforgeClient({
-      apiKey: process.env.FilefORGE_API_KEY,
+      apiKey: process.env.FILEFORGE_API_KEY,
     });
 
     await ff.pdf.form.mark(
@@ -75,7 +83,7 @@ describe("node", () => {
 
   it("should take fs.createReadStream", async () => {
     const ff = new FileforgeClient({
-      apiKey: process.env.FilefORGE_API_KEY,
+      apiKey: process.env.FILEFORGE_API_KEY,
     });
 
     await ff.pdf.form.mark(
@@ -86,7 +94,7 @@ describe("node", () => {
 
   it.skipIf(NODE_VERSION < 20)("should work with generation", async () => {
     const ff = new FileforgeClient({
-      apiKey: process.env.FilefORGE_API_KEY,
+      apiKey: process.env.FILEFORGE_API_KEY,
     });
 
     const document = await ff.pdf.generate(
@@ -113,7 +121,7 @@ describe("node", () => {
     "should work with generation without host",
     async () => {
       const ff = new FileforgeClient({
-        apiKey: process.env.FilefORGE_API_KEY,
+        apiKey: process.env.FILEFORGE_API_KEY,
       });
 
       const document = await ff.pdf.generate(
