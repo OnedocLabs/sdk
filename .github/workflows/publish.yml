@@ -41,6 +41,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
+          registry-url: "https://registry.npmjs.org"
           cache: "npm"
           node-version: 20
 
@@ -51,7 +52,7 @@ jobs:
         run: npm run build --workspace=@fileforge/client
 
       - name: Publish package
-        run: npm publish
+        run: npm publish --access public
         working-directory: packages/typescript
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
