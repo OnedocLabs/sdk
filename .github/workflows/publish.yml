@@ -20,6 +20,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
+          cache: "npm"
           node-version: ${{ matrix.node }}
 
       - name: Install dependencies
@@ -38,6 +39,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
+          cache: "npm"
           node-version: 20
 
       - name: Install dependencies
