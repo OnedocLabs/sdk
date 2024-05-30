@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "noStrictGenericChecks": false,
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "declaration": true,
+    "outDir": "./dist",
+    "sourceMap": true,
+    "inlineSources": true,
+    "sourceRoot": "/"
+  },
+  "include": [
+    "src/**/*",
+    "__checks__"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/_patches",
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "@fileforge/client",
+  "version": "0.1.2",
+  "scripts": {
+    "build": "tsc"
+  },
+  "main": "dist/index.js",
+  "dependencies": {
+    "form-data": "4.0.0",
+    "form-data-encoder": "^4.0.2",
+    "formdata-node": "^6.0.3",
+    "mime-types": "^2.1.35",
+    "node-fetch": "2.7.0",
+    "qs": "6.11.2",
+    "stream-mime-type": "^2.0.0",
+    "url-join": "4.0.1"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.6.11",
+    "@types/qs": "^6.9.15",
+    "@types/url-join": "^4.0.3",
+    "@web-std/file": "^3.0.3",
+    "typescript": "^5.4.5"
+  }
+}
