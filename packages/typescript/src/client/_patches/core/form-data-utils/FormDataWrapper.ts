@@ -1,4 +1,3 @@
-import { getMimeType } from "stream-mime-type";
 import { RUNTIME } from "../runtime";
 
 interface CrossPlatformFormData {
@@ -82,7 +81,9 @@ export class FormDataWrapper {
       RUNTIME.type === "node" &&
       value instanceof (await import("node:stream")).Readable
     ) {
-      const { stream, mime } = await getMimeType(value);
+      const { stream, mime } = await (
+        await import("stream-mime-type")
+      ).getMimeType(value);
 
       // If there is no filename, generate a random one. This is especially useful for multiple file operations that don't rely on filenames.
       let fileName = (
