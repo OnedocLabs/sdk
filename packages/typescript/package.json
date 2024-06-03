@@ -1,7 +1,6 @@
 {
   "name": "@fileforge/client",
-  "version": "0.1.4",
-  "type": "module",
+  "version": "0.1.5",
   "scripts": {
     "build": "tsc --module es2022 --outDir dist/esm && tsc --module commonjs --outDir dist/cjs"
   },
