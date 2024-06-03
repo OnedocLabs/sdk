@@ -10,5 +10,5 @@ import * as Fileforge from "../../../../index";
  */
 export interface PdfGenerateRequest {
     /** Conversion options. This field is required even if empty. */
-    options: Fileforge.PdfGenerateRequestOptions;
+    options?: Fileforge.PdfGenerateRequestOptions;
 }

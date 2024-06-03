@@ -34,5 +34,5 @@ export interface PdfFromDocxRequest {
      *
      * There will not be an error if a variable is not found in the document, nor if variables found in the document are not in the options.
      */
-    options: Fileforge.PdfFromDocxRequestOptions;
+    options?: Fileforge.PdfFromDocxRequestOptions;
 }

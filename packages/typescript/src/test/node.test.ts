@@ -5,6 +5,7 @@
 import { describe, it, expect } from "vitest";
 import { FileforgeClient } from "@/client";
 import * as fs from "node:fs";
+import internal from "node:stream";
 
 const NODE_VERSION = parseInt(process.versions.node.split(".")[0]);
 
@@ -53,12 +54,14 @@ describe("node", () => {
       apiKey: process.env.FILEFORGE_API_KEY,
     });
 
-    await ff.pdf.form.mark(
+    const response = await ff.pdf.form.mark(
       new File([fs.readFileSync(__dirname + "/samples/form.pdf")], "form.pdf", {
         type: "application/pdf",
       }),
       { options: {} },
     );
+
+    expect(response).toBeInstanceOf(internal.Readable);
   });
 
   it("should take File polyfill", async () => {

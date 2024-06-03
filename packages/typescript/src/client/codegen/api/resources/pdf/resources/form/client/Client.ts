@@ -223,7 +223,10 @@ export class Form {
         requestOptions?: Form.RequestOptions
     ): Promise<stream.Readable> {
         const _request = new core.FormDataWrapper();
-        await _request.append("options", JSON.stringify(request.options));
+        if (request.options != null) {
+            await _request.append("options", JSON.stringify(request.options));
+        }
+
         await _request.append("file", file);
         const _maybeEncodedRequest = _request.getRequest();
         const _response = await core.fetcher<stream.Readable>({

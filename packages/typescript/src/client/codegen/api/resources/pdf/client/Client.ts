@@ -59,7 +59,10 @@ export class Pdf {
         requestOptions?: Pdf.RequestOptions
     ): Promise<stream.Readable> {
         const _request = new core.FormDataWrapper();
-        await _request.append("options", JSON.stringify(request.options));
+        if (request.options != null) {
+            await _request.append("options", JSON.stringify(request.options));
+        }
+
         await _request.append("file", file);
         const _maybeEncodedRequest = _request.getRequest();
         const _response = await core.fetcher<stream.Readable>({
@@ -143,7 +146,10 @@ export class Pdf {
         requestOptions?: Pdf.RequestOptions
     ): Promise<stream.Readable> {
         const _request = new core.FormDataWrapper();
-        await _request.append("options", JSON.stringify(request.options));
+        if (request.options != null) {
+            await _request.append("options", JSON.stringify(request.options));
+        }
+
         for (const _file of files) {
             await _request.append("files", _file);
         }
@@ -238,7 +244,10 @@ export class Pdf {
         requestOptions?: Pdf.RequestOptions
     ): Promise<stream.Readable> {
         const _request = new core.FormDataWrapper();
-        await _request.append("options", JSON.stringify(request.options));
+        if (request.options != null) {
+            await _request.append("options", JSON.stringify(request.options));
+        }
+
         for (const _file of files) {
             await _request.append("files", _file);
         }

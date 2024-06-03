@@ -9,5 +9,5 @@ import * as Fileforge from "../../../../../../index";
  *     {}
  */
 export interface FormFillRequest {
-    options: Fileforge.pdf.FormFillRequestOptions;
+    options?: Fileforge.pdf.FormFillRequestOptions;
 }

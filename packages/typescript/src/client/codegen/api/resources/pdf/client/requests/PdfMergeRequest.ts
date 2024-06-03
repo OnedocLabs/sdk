@@ -9,5 +9,5 @@ import * as Fileforge from "../../../../index";
  *     {}
  */
 export interface PdfMergeRequest {
-    options: Fileforge.PdfMergeRequestOptions;
+    options?: Fileforge.PdfMergeRequestOptions;
 }
