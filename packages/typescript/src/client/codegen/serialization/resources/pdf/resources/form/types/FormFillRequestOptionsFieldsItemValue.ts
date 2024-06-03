@@ -10,12 +10,14 @@ export const FormFillRequestOptionsFieldsItemValue: core.serialization.ObjectSch
     serializers.pdf.FormFillRequestOptionsFieldsItemValue.Raw,
     Fileforge.pdf.FormFillRequestOptionsFieldsItemValue
 > = core.serialization.object({
+    name: core.serialization.string(),
     type: core.serialization.stringLiteral("PDFTextField"),
     value: core.serialization.string(),
 });
 
 export declare namespace FormFillRequestOptionsFieldsItemValue {
     interface Raw {
+        name: string;
         type: "PDFTextField";
         value: string;
     }

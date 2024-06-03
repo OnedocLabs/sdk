@@ -11,12 +11,14 @@ export const FormFillRequestOptionsFieldsItemTwo: core.serialization.ObjectSchem
     serializers.pdf.FormFillRequestOptionsFieldsItemTwo.Raw,
     Fileforge.pdf.FormFillRequestOptionsFieldsItemTwo
 > = core.serialization.object({
+    name: core.serialization.string(),
     type: FormFillRequestOptionsFieldsItemTwoType,
     selected: core.serialization.list(core.serialization.string()),
 });
 
 export declare namespace FormFillRequestOptionsFieldsItemTwo {
     interface Raw {
+        name: string;
         type: FormFillRequestOptionsFieldsItemTwoType.Raw;
         selected: string[];
     }

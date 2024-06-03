@@ -3,6 +3,8 @@
  */
 
 export interface FormFillRequestOptionsFieldsItemValue {
+    /** Name of the field to fill. This must match an exact name from the PDF document. To detect all fields, use the /pdf/form/fields endpoint, or use the /pdf/form/mark endpoint to get an annotated PDF with each detected field. */
+    name: string;
     type: "PDFTextField";
     value: string;
 }

@@ -10,12 +10,14 @@ export const FormFillRequestOptionsFieldsItemChecked: core.serialization.ObjectS
     serializers.pdf.FormFillRequestOptionsFieldsItemChecked.Raw,
     Fileforge.pdf.FormFillRequestOptionsFieldsItemChecked
 > = core.serialization.object({
+    name: core.serialization.string(),
     type: core.serialization.stringLiteral("PDFCheckBox"),
     checked: core.serialization.boolean(),
 });
 
 export declare namespace FormFillRequestOptionsFieldsItemChecked {
     interface Raw {
+        name: string;
         type: "PDFCheckBox";
         checked: boolean;
     }

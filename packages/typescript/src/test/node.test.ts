@@ -95,6 +95,20 @@ describe("node", () => {
     );
   });
 
+  it("should take multiple fs.createReadStream", async () => {
+    const ff = new FileforgeClient({
+      apiKey: process.env.FILEFORGE_API_KEY,
+    });
+
+    await ff.pdf.merge(
+      [
+        fs.createReadStream(__dirname + "/samples/form.pdf"),
+        fs.createReadStream(__dirname + "/samples/form.pdf"),
+      ],
+      {},
+    );
+  });
+
   it.skipIf(NODE_VERSION < 20)("should work with generation", async () => {
     const ff = new FileforgeClient({
       apiKey: process.env.FILEFORGE_API_KEY,

@@ -10,12 +10,14 @@ export const FormFillRequestOptionsFieldsItemThree: core.serialization.ObjectSch
     serializers.pdf.FormFillRequestOptionsFieldsItemThree.Raw,
     Fileforge.pdf.FormFillRequestOptionsFieldsItemThree
 > = core.serialization.object({
+    name: core.serialization.string(),
     type: core.serialization.stringLiteral("PDFRadioGroup"),
     selected: core.serialization.string(),
 });
 
 export declare namespace FormFillRequestOptionsFieldsItemThree {
     interface Raw {
+        name: string;
         type: "PDFRadioGroup";
         selected: string;
     }

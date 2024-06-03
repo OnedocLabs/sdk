@@ -4,7 +4,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "update": "curl https://api.fileforge.com/documentation/yaml > fern/openapi/openapi.yml && ts-node scripts/openapi-process.ts",
+    "update": "rm fern/openapi/openapi.yml && curl https://api.fileforge.com/documentation/yaml > fern/openapi/openapi.yml && ts-node scripts/openapi-process.ts",
     "generate": "fern generate && cp -r packages/typescript/src/client/_patches/* packages/typescript/src/client/codegen && ts-node scripts/ts-process.ts",
     "regenerate": "npm run update && npm run generate",
     "test": "npx vitest"
