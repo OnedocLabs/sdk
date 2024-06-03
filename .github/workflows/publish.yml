@@ -26,6 +26,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      # Build before running tests, so tests can be run against the built code for ESM and CJS
+      - name: Build package
+        run: npm run build --workspace=@fileforge/client
+
       - name: Run tests
         run: npm test
         env:
