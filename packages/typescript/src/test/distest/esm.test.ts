@@ -11,9 +11,13 @@ describe("FileforgeClient", () => {
     });
 
     const response = await ff.pdf.form.mark(
-      new File([fs.readFileSync(__dirname + "/samples/form.pdf")], "form.pdf", {
-        type: "application/pdf",
-      }),
+      new File(
+        [fs.readFileSync(__dirname + "/../samples/form.pdf")],
+        "form.pdf",
+        {
+          type: "application/pdf",
+        },
+      ),
       { options: {} },
     );
 
@@ -26,7 +30,7 @@ describe("FileforgeClient", () => {
     });
 
     const response = await ff.pdf.form.mark(
-      fs.createReadStream(__dirname + "/samples/form.pdf"),
+      fs.createReadStream(__dirname + "/../samples/form.pdf"),
       {},
     );
 
