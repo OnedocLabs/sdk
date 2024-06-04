@@ -7,6 +7,7 @@ import { FileforgeClient } from "@/client";
 import * as fs from "node:fs";
 import internal, { Readable } from "node:stream";
 import { fileFromPath } from "formdata-node/file-from-path";
+import { BadRequestError, UnauthorizedError } from "@/client/codegen/api";
 
 const NODE_VERSION = parseInt(process.versions.node.split(".")[0]);
 
@@ -26,6 +27,46 @@ describe("node", () => {
     });
 
     await ff.getStatus();
+  });
+
+  it("should throw verbose errors", async () => {
+    const ff = new FileforgeClient({
+      apiKey: "invalid",
+    });
+
+    try {
+      await ff.pdf.generate(
+        [
+          await fileFromPath(__dirname + "/samples/index.html", "index.html", {
+            type: "text/html",
+          }),
+        ],
+        {
+          options: { host: true },
+        },
+      );
+    } catch (e) {
+      expect(e).toBeInstanceOf(UnauthorizedError);
+    }
+
+    const authentifiedFf = new FileforgeClient({
+      apiKey: process.env.FILEFORGE_API_KEY,
+    });
+
+    try {
+      await authentifiedFf.pdf.generate(
+        [
+          await fileFromPath(__dirname + "/samples/index.html", "doc.html", {
+            type: "text/html",
+          }),
+        ],
+        {
+          options: { host: true },
+        },
+      );
+    } catch (e) {
+      expect(e).toBeInstanceOf(BadRequestError);
+    }
   });
 
   it.skipIf(NODE_VERSION >= 20)("should work with node < 20", () => {

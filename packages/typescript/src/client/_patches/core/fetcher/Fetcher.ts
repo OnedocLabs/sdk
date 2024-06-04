@@ -195,7 +195,7 @@ async function fetcherImpl<R = unknown>(
         error: {
           reason: "status-code",
           statusCode: response.status,
-          body,
+          body: await response.json(),
         },
       };
     }
