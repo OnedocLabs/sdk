@@ -176,6 +176,19 @@ describe("node", () => {
     expect(file).toBeInstanceOf(Readable);
   });
 
+  it("should create index from string", async () => {
+    const ff = new FileforgeClient({
+      apiKey: process.env.FILEFORGE_API_KEY,
+    });
+
+    const file = await ff.pdf.generate(
+      "<!doctype text><html><body><h1>Hello world</h1></body></html>",
+      {},
+    );
+
+    expect(file).toBeInstanceOf(Readable);
+  });
+
   it("should decode json in generate", async () => {
     const ff = new FileforgeClient({
       apiKey: process.env.FILEFORGE_API_KEY,

@@ -2,10 +2,11 @@ import { Readable } from "node:stream";
 import { FileforgeClient as InternalClient } from "./codegen";
 export { Fileforge } from "./codegen";
 import { Pdf as CodegenPDF } from "./codegen/api/resources/pdf/client/Client";
+import { File } from "formdata-node";
 
 export class Pdf extends CodegenPDF {
   public async generate<Options extends Parameters<CodegenPDF["generate"]>[1]>(
-    files: Parameters<CodegenPDF["generate"]>[0],
+    files: Parameters<CodegenPDF["generate"]>[0] | string,
     options: Options,
     request?: Parameters<CodegenPDF["generate"]>[2],
   ): Promise<
@@ -15,7 +16,21 @@ export class Pdf extends CodegenPDF {
         }
       : Awaited<ReturnType<CodegenPDF["generate"]>>
   > {
-    const params = [files, options, request] as const;
+    let parsedFiles = files;
+
+    if (typeof files === "string") {
+      parsedFiles = [
+        new File([files], "index.html", {
+          type: "text/html",
+        }),
+      ];
+    }
+
+    const params = [
+      parsedFiles as Parameters<CodegenPDF["generate"]>[0],
+      options,
+      request,
+    ] as const;
 
     const responseStream = (await super.generate(...params)) as
       | Readable
