@@ -84,23 +84,14 @@ async function fetcherImpl<R = unknown>(
     }
   };
 
-  if (RUNTIME.type === "node") {
-    if (
-      args.body instanceof (await import("formdata-node")).FormData ||
-      args.body instanceof Readable
-    ) {
-      // @ts-expect-error
-      body = args.body;
-    } else {
-      body = maybeStringifyBody(args.body);
-    }
+  if (
+    args.body instanceof (await import("formdata-node")).FormData ||
+    args.body instanceof Readable
+  ) {
+    // @ts-expect-error
+    body = args.body;
   } else {
-    if (args.body instanceof (await import("form-data")).default) {
-      // @ts-expect-error
-      body = args.body;
-    } else {
-      body = maybeStringifyBody(args.body);
-    }
+    body = maybeStringifyBody(args.body);
   }
 
   // In Node.js environments, the SDK always uses`node-fetch`.

@@ -4,6 +4,7 @@
 
 import { describe, it, expect } from "vitest";
 import { FileforgeClient } from "@/client";
+import { fileFromPath } from "formdata-node/file-from-path";
 
 describe("browser", () => {
   it("should work", () => {
@@ -15,5 +16,16 @@ describe("browser", () => {
         apiKey: process.env.FILEFORGE_API_KEY,
       }),
     ).toBeInstanceOf(FileforgeClient);
+  });
+
+  it("should accept file", async () => {
+    const ff = new FileforgeClient({
+      apiKey: process.env.FILEFORGE_API_KEY,
+    });
+
+    await ff.pdf.form.mark(
+      await fileFromPath(__dirname + "/samples/form.pdf"),
+      {},
+    );
   });
 });

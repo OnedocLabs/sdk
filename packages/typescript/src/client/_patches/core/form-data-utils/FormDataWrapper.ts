@@ -61,11 +61,7 @@ export class FormDataWrapper {
 
   public async append(name: string, value: any): Promise<void> {
     if (this.fd == null) {
-      if (RUNTIME.type === "node") {
-        this.fd = new (await import("formdata-node")).FormData();
-      } else {
-        this.fd = new (await import("form-data")).default();
-      }
+      this.fd = new (await import("formdata-node")).FormData();
     }
 
     if (name === "options" && typeof value === "string") {
