@@ -1,4 +1,5 @@
 import { RUNTIME } from "../runtime";
+import { Blob } from "formdata-node";
 
 interface CrossPlatformFormData {
   append(key: string, value: any): void;

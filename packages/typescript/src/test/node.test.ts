@@ -5,7 +5,8 @@
 import { describe, it, expect } from "vitest";
 import { FileforgeClient } from "@/client";
 import * as fs from "node:fs";
-import internal from "node:stream";
+import internal, { Readable } from "node:stream";
+import { fileFromPath } from "formdata-node/file-from-path";
 
 const NODE_VERSION = parseInt(process.versions.node.split(".")[0]);
 
@@ -157,4 +158,40 @@ describe("node", () => {
       expect(document).toBeDefined();
     },
   );
+
+  it("should decode file in generate", async () => {
+    const ff = new FileforgeClient({
+      apiKey: process.env.FILEFORGE_API_KEY,
+    });
+
+    const file = await ff.pdf.generate(
+      [
+        await fileFromPath(__dirname + "/samples/index.html", "index.html", {
+          type: "text/html",
+        }),
+      ],
+      {},
+    );
+
+    expect(file).toBeInstanceOf(Readable);
+  });
+
+  it("should decode json in generate", async () => {
+    const ff = new FileforgeClient({
+      apiKey: process.env.FILEFORGE_API_KEY,
+    });
+
+    const { url } = await ff.pdf.generate(
+      [
+        await fileFromPath(__dirname + "/samples/index.html", "index.html", {
+          type: "text/html",
+        }),
+      ],
+      {
+        options: { host: true },
+      },
+    );
+
+    expect(url).toBeDefined();
+  });
 });
