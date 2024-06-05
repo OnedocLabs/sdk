@@ -7,7 +7,8 @@
     "update": "rm fern/openapi/openapi.yml && curl https://api.fileforge.com/documentation/yaml > fern/openapi/openapi.yml && ts-node scripts/openapi-process.ts",
     "generate": "fern generate && cp -r packages/typescript/src/client/_patches/* packages/typescript/src/client/codegen && ts-node scripts/ts-process.ts",
     "regenerate": "npm run update && npm run generate",
-    "test": "npx vitest"
+    "test": "npx vitest",
+    "test:browser": "npx vitest --config browser.vitest.config.ts"
   },
   "workspaces": [
     "packages/*"
@@ -21,6 +22,7 @@
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/mime": "^3.0.4",
     "@types/randomstring": "^1.1.12",
+    "@vitest/browser": "^1.6.0",
     "@vitest/coverage-v8": "^1.4.0",
     "dotenv": "^16.4.5",
     "eslint": "^8.57.0",
@@ -37,6 +39,7 @@
     "typescript-eslint": "^7.3.1",
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^1.4.0",
+    "webdriverio": "^8.38.2",
     "yaml": "^2.4.2"
   }
 }

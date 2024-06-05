@@ -1,7 +1,6 @@
 import qs from "qs";
 import { RUNTIME } from "../runtime";
 import { APIResponse } from "./APIResponse";
-import { Readable } from "stream";
 
 export type FetchFunction = <R = unknown>(
   args: Fetcher.Args,
@@ -84,14 +83,21 @@ async function fetcherImpl<R = unknown>(
     }
   };
 
-  if (
-    args.body instanceof (await import("formdata-node")).FormData ||
-    args.body instanceof Readable
-  ) {
-    // @ts-expect-error
+  if (args.body instanceof (await import("formdata-node")).FormData) {
     body = args.body;
   } else {
-    body = maybeStringifyBody(args.body);
+    try {
+      const Readable = (await import("stream")).Readable;
+
+      if (args.body instanceof Readable) {
+        // @ts-expect-error
+        body = args.body;
+      } else {
+        body = maybeStringifyBody(args.body);
+      }
+    } catch (e) {
+      body = maybeStringifyBody(args.body);
+    }
   }
 
   // In Node.js environments, the SDK always uses`node-fetch`.

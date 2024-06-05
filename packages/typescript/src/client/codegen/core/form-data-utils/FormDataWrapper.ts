@@ -21,16 +21,29 @@ class FormDataRequestBody {
     }
   }
 
+  public async needsEncoder() {
+    if (RUNTIME.type !== "node") {
+      return false;
+    }
+
+    try {
+      return (await import("node:stream")).Readable !== undefined;
+    } catch (e) {
+      return false;
+    }
+  }
+
   /**
    * @returns the multipart form data request
    */
   public async getBody(): Promise<any> {
-    if (RUNTIME.type !== "node") {
+    if (!(await this.needsEncoder())) {
       return this.fd;
     } else {
       if (this.encoder == null) {
         await this.setup();
       }
+
       return (await import("node:stream")).Readable.from(this.encoder);
     }
   }
@@ -39,12 +52,13 @@ class FormDataRequestBody {
    * @returns headers that need to be added to the multipart form data request
    */
   public async getHeaders(): Promise<Record<string, string>> {
-    if (RUNTIME.type !== "node") {
+    if (!(await this.needsEncoder())) {
       return {};
     } else {
       if (this.encoder == null) {
         await this.setup();
       }
+
       return {
         ...this.encoder.headers,
         "Content-Length": this.encoder.length,
@@ -74,30 +88,30 @@ export class FormDataWrapper {
       return;
     }
 
-    if (
-      RUNTIME.type === "node" &&
-      value instanceof (await import("node:stream")).Readable
-    ) {
-      const { stream, mime } = await (
-        await import("stream-mime-type")
-      ).getMimeType(value);
+    try {
+      const Readable = (await import("stream")).Readable;
+      if (RUNTIME.type === "node" && value instanceof Readable) {
+        const { stream, mime } = await (
+          await import("stream-mime-type")
+        ).getMimeType(value);
 
-      // If there is no filename, generate a random one. This is especially useful for multiple file operations that don't rely on filenames.
-      let fileName = (
-        (Math.random() + 1).toString(36) + "00000000000000000"
-      ).slice(2, 7);
+        // If there is no filename, generate a random one. This is especially useful for multiple file operations that don't rely on filenames.
+        let fileName = (
+          (Math.random() + 1).toString(36) + "00000000000000000"
+        ).slice(2, 7);
 
-      this.fd.append(name, {
-        type: mime,
-        name: fileName,
-        [Symbol.toStringTag]: "File",
-        stream() {
-          return stream;
-        },
-      });
+        this.fd.append(name, {
+          type: mime,
+          name: fileName,
+          [Symbol.toStringTag]: "File",
+          stream() {
+            return stream;
+          },
+        });
 
-      return;
-    }
+        return;
+      }
+    } catch (e) {}
 
     this.fd.append(name, value);
   }

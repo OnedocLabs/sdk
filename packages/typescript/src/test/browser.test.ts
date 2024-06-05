@@ -5,7 +5,12 @@
 import { describe, it, expect } from "vitest";
 import { FileforgeClient } from "@/client";
 import { fileFromPath } from "formdata-node/file-from-path";
-import { ReadableStream } from "stream/web";
+
+const process = {
+  env: {
+    FILEFORGE_API_KEY: "1466ffcd-95d0-4c84-9ebd-cb0997d4c31c",
+  },
+};
 
 describe("browser", () => {
   it("should work", () => {
