@@ -1,7 +1,7 @@
 /**
  * @vitest-environment node
  */
-
+import { beforeAll } from "vitest";
 import { describe, it, expect } from "vitest";
 import { FileforgeClient } from "@/client";
 import { FormDetectResponseItem } from "@/client/codegen/api/resources/pdf/resources/form/types/FormDetectResponseItem";
@@ -14,6 +14,12 @@ import { BadRequestError, UnauthorizedError } from "@/client/codegen/api";
 const NODE_VERSION = parseInt(process.versions.node.split(".")[0]);
 
 describe("node", () => {
+  beforeAll(() => {
+    if (!process.env.FILEFORGE_API_KEY) {
+      throw new Error("FILEFORGE_API_KEY is not set");
+    }
+  });
+
   it("convert docx snippet should work", async () => {
     const ff = new FileforgeClient({
       apiKey: process.env.FILEFORGE_API_KEY,
@@ -41,9 +47,7 @@ describe("node", () => {
     }
   });
 
-  it("generate from HTML should work", async () => {
-    const HTML = `<!doctype html><html><body><h1>Hello world</h1></body></html>"`;
-
+  it.skipIf(NODE_VERSION < 20)("generate from HTML should work", async () => {
     const ff = new FileforgeClient({
       apiKey: process.env.FILEFORGE_API_KEY,
     });
@@ -77,7 +81,7 @@ describe("node", () => {
     }
   });
 
-  it("merge PDFs should work", async () => {
+  it.skipIf(NODE_VERSION < 20)("merge PDFs should work", async () => {
     const ff = new FileforgeClient({
       apiKey: process.env.FILEFORGE_API_KEY,
     });
@@ -107,7 +111,7 @@ describe("node", () => {
     }
   });
 
-  it("detect form fields in PDFs should work", async () => {
+  it.skipIf(NODE_VERSION < 20)("detect form fields in PDFs should work", async () => {
     const ff = new FileforgeClient({
       apiKey: process.env.FILEFORGE_API_KEY,
     });
@@ -132,69 +136,69 @@ describe("node", () => {
     }
   });
 
-  it("mark fields in PDFs should work", async () => {
+  it.skipIf(NODE_VERSION < 20)("mark fields in PDFs should work", async () => {
     const ff = new FileforgeClient({
       apiKey: process.env.FILEFORGE_API_KEY,
     });
 
-    (async () => {
-      try {
-        const pdfStream = await ff.pdf.form.mark(
-          new File(
-            [fs.readFileSync(__dirname + "/samples/form.pdf")],
-            "form.pdf",
-            {
-              type: "application/pdf",
-            },
-          ),
-          { options: {} },
-        );
+    try {
+      const pdfStream = await ff.pdf.form.mark(
+        new File(
+          [fs.readFileSync(__dirname + "/samples/form.pdf")],
+          "form.pdf",
+          {
+            type: "application/pdf",
+          },
+        ),
+        { options: {} },
+      );
 
-        pdfStream.pipe(fs.createWriteStream("./result_mark.pdf"));
-        expect(pdfStream).toBeInstanceOf(Readable);
-      } catch (error) {
-        console.error("Error during PDF merge:", error);
-        throw error;
-      }
-    })();
+      pdfStream.pipe(fs.createWriteStream("./result_mark.pdf"));
+      expect(pdfStream).toBeInstanceOf(Readable);
+    } catch (error) {
+      console.error("Error during PDF merge:", error);
+      throw error;
+    }
   });
 
-  it("fill fields in PDFs should work", async () => {
+  it.skipIf(NODE_VERSION < 20)("fill fields in PDFs should work", async () => {
     const ff = new FileforgeClient({
       apiKey: process.env.FILEFORGE_API_KEY,
     });
 
-    (async () => {
-      try {
-        const formFillRequest = {
-          options: {
-            fields: [
-              {
-                name: "Producer Name",
-                type: "PDFTextField",
-                value: "Titouan Launay",
-              } as FormFillRequestOptionsFieldsItemValue,
-            ],
-          },
-        };
-        const requestOptions = {
-          timeoutInSeconds: 60,
-          maxRetries: 3,
-        };
-        const filledPdfStream = await ff.pdf.form.fill(
-          new File([fs.readFileSync(__dirname + "/samples/form.pdf")], "form.pdf", {
+    try {
+      const formFillRequest = {
+        options: {
+          fields: [
+            {
+              name: "Producer Name",
+              type: "PDFTextField",
+              value: "Titouan Launay",
+            } as FormFillRequestOptionsFieldsItemValue,
+          ],
+        },
+      };
+      const requestOptions = {
+        timeoutInSeconds: 60,
+        maxRetries: 3,
+      };
+      const filledPdfStream = await ff.pdf.form.fill(
+        new File(
+          [fs.readFileSync(__dirname + "/samples/form.pdf")],
+          "form.pdf",
+          {
             type: "application/pdf",
-          }),
-          formFillRequest,
-          requestOptions,
-        );
+          },
+        ),
+        formFillRequest,
+        requestOptions,
+      );
 
-        filledPdfStream.pipe(fs.createWriteStream("./result_filled.pdf"));
-        expect(filledPdfStream).toBeInstanceOf(Readable);
-        console.log("PDF form filling successful. Stream ready.");
-      } catch (error) {
-        console.error("Error during PDF form filling:", error);
-      }
-    })();
+      filledPdfStream.pipe(fs.createWriteStream("./result_filled.pdf"));
+      expect(filledPdfStream).toBeInstanceOf(Readable);
+      console.log("PDF form filling successful. Stream ready.");
+    } catch (error) {
+      console.error("Error during PDF form filling:", error);
+    }
   });
 });
