@@ -76,7 +76,7 @@ describe("node", () => {
       console.log(pdf.url);
       expect(pdf.url).toBeDefined();
     } catch (error) {
-      console.error("Error during PDF conversion:", error);
+      console.error("Error during PDF generation:", error);
       throw error;
     }
   });
@@ -131,7 +131,7 @@ describe("node", () => {
       console.log(resultObject);
       expect(resultObject).toBeInstanceOf(Array<FormDetectResponseItem>);
     } catch (error) {
-      console.error("Error during PDF merge:", error);
+      console.error("Error during PDF form detect:", error);
       throw error;
     }
   });
@@ -156,7 +156,7 @@ describe("node", () => {
       pdfStream.pipe(fs.createWriteStream("./result_mark.pdf"));
       expect(pdfStream).toBeInstanceOf(Readable);
     } catch (error) {
-      console.error("Error during PDF merge:", error);
+      console.error("Error during PDF form mark:", error);
       throw error;
     }
   });
