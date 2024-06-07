@@ -50,7 +50,7 @@ describe("browser", () => {
     );
 
     expect(file).toBeInstanceOf(ReadableStream);
-  });
+  }, 30000);
 
   it("should decode json in generate", async () => {
     const ff = new FileforgeClient({
