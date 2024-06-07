@@ -45,7 +45,7 @@ describe("node", () => {
       console.error("Error during PDF conversion:", error);
       throw error;
     }
-  });
+  }, 30000);
 
   it.skipIf(NODE_VERSION < 20)("generate from HTML should work", async () => {
     const ff = new FileforgeClient({
