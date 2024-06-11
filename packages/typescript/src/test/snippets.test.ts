@@ -4,12 +4,16 @@
 import { beforeAll } from "vitest";
 import { describe, it, expect } from "vitest";
 import { FileforgeClient } from "@/client";
+import { pipeline } from 'stream';
+import { promisify } from 'util';
 import { FormDetectResponseItem } from "@/client/codegen/api/resources/pdf/resources/form/types/FormDetectResponseItem";
 import { FormFillRequestOptionsFieldsItemValue } from "@/client/codegen/api/resources/pdf/resources/form/types/FormFillRequestOptionsFieldsItemValue";
+import { FormFillRequestOptionsFieldsItemChecked } from "@/client/codegen/api/resources/pdf/resources/form/types/FormFillRequestOptionsFieldsItemChecked";
 import * as fs from "node:fs";
 import internal, { Readable } from "node:stream";
 import { fileFromPath } from "formdata-node/file-from-path";
 import { BadRequestError, UnauthorizedError } from "@/client/codegen/api";
+
 
 const NODE_VERSION = parseInt(process.versions.node.split(".")[0]);
 
@@ -31,7 +35,13 @@ describe("node", () => {
       );
       const pdfStream = await ff.pdf.fromDocx(
         docxFile,
-        {},
+        { options:{
+          "templateLiterals": {
+            "replace_me": "John Doe",
+          }
+        }
+        }
+        ,
         {
           timeoutInSeconds: 30,
         },
@@ -162,6 +172,9 @@ describe("node", () => {
   });
 
   it.skipIf(NODE_VERSION < 20)("fill fields in PDFs should work", async () => {
+
+    const pipelineAsync = promisify(pipeline);
+
     const ff = new FileforgeClient({
       apiKey: process.env.FILEFORGE_API_KEY,
     });
@@ -173,8 +186,13 @@ describe("node", () => {
             {
               name: "Producer Name",
               type: "PDFTextField",
-              value: "Titouan Launay",
+              value: "Pierre Dorge"
             } as FormFillRequestOptionsFieldsItemValue,
+            {
+                name:"Check Box4",
+                type:"PDFCheckBox",
+                checked: false
+            } as FormFillRequestOptionsFieldsItemChecked,
           ],
         },
       };
@@ -194,7 +212,9 @@ describe("node", () => {
         requestOptions,
       );
 
-      filledPdfStream.pipe(fs.createWriteStream("./result_filled.pdf"));
+      
+      await pipelineAsync(filledPdfStream, fs.createWriteStream("./result_filled.pdf"));
+
       expect(filledPdfStream).toBeInstanceOf(Readable);
       console.log("PDF form filling successful. Stream ready.");
     } catch (error) {
