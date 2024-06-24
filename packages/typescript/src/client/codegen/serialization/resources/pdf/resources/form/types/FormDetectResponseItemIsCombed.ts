@@ -6,9 +6,9 @@ import * as serializers from "../../../../../index";
 import * as Fileforge from "../../../../../../api/index";
 import * as core from "../../../../../../core";
 
-export const FormDetectResponseItemDefaultValue: core.serialization.ObjectSchema<
-    serializers.pdf.FormDetectResponseItemDefaultValue.Raw,
-    Fileforge.pdf.FormDetectResponseItemDefaultValue
+export const FormDetectResponseItemIsCombed: core.serialization.ObjectSchema<
+    serializers.pdf.FormDetectResponseItemIsCombed.Raw,
+    Fileforge.pdf.FormDetectResponseItemIsCombed
 > = core.serialization.object({
     type: core.serialization.stringLiteral("PDFTextField"),
     defaultValue: core.serialization.string().optional(),
@@ -21,7 +21,7 @@ export const FormDetectResponseItemDefaultValue: core.serialization.ObjectSchema
     maxLength: core.serialization.number().optional(),
 });
 
-export declare namespace FormDetectResponseItemDefaultValue {
+export declare namespace FormDetectResponseItemIsCombed {
     interface Raw {
         type: "PDFTextField";
         defaultValue?: string | null;

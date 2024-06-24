@@ -8,4 +8,5 @@ export type FormDetectResponseItem =
     | Fileforge.pdf.FormDetectResponseItemIsChecked
     | Fileforge.pdf.FormDetectResponseItemIsEditable
     | Fileforge.pdf.FormDetectResponseItemIsMutuallyExclusive
-    | Fileforge.pdf.FormDetectResponseItemDefaultValue;
+    | Fileforge.pdf.FormDetectResponseItemIsCombed
+    | Fileforge.pdf.FormDetectResponseItemType;

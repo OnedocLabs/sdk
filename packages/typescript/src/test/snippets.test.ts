@@ -10,6 +10,7 @@ import * as fs from "node:fs";
 import internal, { Readable } from "node:stream";
 import { fileFromPath } from "formdata-node/file-from-path";
 import { BadRequestError, UnauthorizedError } from "@/client/codegen/api";
+import { pipeline } from "node:stream/promises";
 
 const NODE_VERSION = parseInt(process.versions.node.split(".")[0]);
 
@@ -111,30 +112,33 @@ describe("node", () => {
     }
   });
 
-  it.skipIf(NODE_VERSION < 20)("detect form fields in PDFs should work", async () => {
-    const ff = new FileforgeClient({
-      apiKey: process.env.FILEFORGE_API_KEY,
-    });
+  it.skipIf(NODE_VERSION < 20)(
+    "detect form fields in PDFs should work",
+    async () => {
+      const ff = new FileforgeClient({
+        apiKey: process.env.FILEFORGE_API_KEY,
+      });
 
-    try {
-      const resultObject = await ff.pdf.form.detect(
-        new File(
-          [fs.readFileSync(__dirname + "/samples/form.pdf")],
-          "form.pdf",
-          {
-            type: "application/pdf",
-          },
-        ),
-        { options: {} },
-      );
+      try {
+        const resultObject = await ff.pdf.form.detect(
+          new File(
+            [fs.readFileSync(__dirname + "/samples/form.pdf")],
+            "form.pdf",
+            {
+              type: "application/pdf",
+            },
+          ),
+          { options: {} },
+        );
 
-      console.log(resultObject);
-      expect(resultObject).toBeInstanceOf(Array<FormDetectResponseItem>);
-    } catch (error) {
-      console.error("Error during PDF form detect:", error);
-      throw error;
-    }
-  });
+        console.log(resultObject);
+        expect(resultObject).toBeInstanceOf(Array<FormDetectResponseItem>);
+      } catch (error) {
+        console.error("Error during PDF form detect:", error);
+        throw error;
+      }
+    },
+  );
 
   it.skipIf(NODE_VERSION < 20)("mark fields in PDFs should work", async () => {
     const ff = new FileforgeClient({
@@ -199,6 +203,85 @@ describe("node", () => {
       console.log("PDF form filling successful. Stream ready.");
     } catch (error) {
       console.error("Error during PDF form filling:", error);
+    }
+  });
+
+  it.skipIf(NODE_VERSION < 20)("Split", async () => {
+    const ff = new FileforgeClient({
+      apiKey: process.env.FILEFORGE_API_KEY,
+    });
+
+    try {
+      const splitRequest = {
+        //
+        options: {
+          splitPage: 1,
+        },
+      };
+      const requestOptions = {
+        timeoutInSeconds: 60,
+        maxRetries: 3,
+      };
+      const splitArchiveStream = await ff.pdf.split(
+        new File(
+          [fs.readFileSync(__dirname + "/samples/form.pdf")],
+          "form.pdf",
+          {
+            type: "application/pdf",
+          },
+        ),
+        splitRequest,
+        requestOptions,
+      );
+
+      await pipeline(
+        splitArchiveStream,
+        fs.createWriteStream("./result_split.zip"),
+      );
+      expect(splitArchiveStream).toBeInstanceOf(Readable);
+      console.log("Split successful. Zip Stream ready.");
+    } catch (error) {
+      console.error("Error during PDF splitting:", error);
+    }
+  });
+
+  it.skipIf(NODE_VERSION < 20)("Extract", async () => {
+    const ff = new FileforgeClient({
+      apiKey: process.env.FILEFORGE_API_KEY,
+    });
+
+    try {
+      const extractRequest = {
+        //
+        options: {
+          start: 1,
+          end: 1,
+        },
+      };
+      const requestOptions = {
+        timeoutInSeconds: 60,
+        maxRetries: 3,
+      };
+      const extractStream = await ff.pdf.extract(
+        new File(
+          [fs.readFileSync(__dirname + "/samples/form.pdf")],
+          "form.pdf",
+          {
+            type: "application/pdf",
+          },
+        ),
+        extractRequest,
+        requestOptions,
+      );
+
+      await pipeline(
+        extractStream,
+        fs.createWriteStream("./result_extract.pdf"),
+      );
+      expect(extractStream).toBeInstanceOf(Readable);
+      console.log("Split successful. Zip Stream ready.");
+    } catch (error) {
+      console.error("Error during PDF splitting:", error);
     }
   });
 });

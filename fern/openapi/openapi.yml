@@ -309,6 +309,7 @@ paths:
   /pdf/merge/:
     post:
       operationId: mergePDFDocuments
+      summary: Merges multiple PDF documents into a single PDF document.
       tags:
         - PDF
       description: Merges multiple PDF documents into a single PDF document.
@@ -514,6 +515,16 @@ paths:
                           type: number
                       required:
                         - type
+                    - type: object
+                      properties:
+                        type:
+                          type: string
+                          enum:
+                            - PDFSignature
+                        defaultValue:
+                          type: string
+                      required:
+                        - type
         "400":
           description: Bad request
           content:
@@ -712,6 +723,141 @@ paths:
       responses:
         "201":
           description: PDF Document filled successfully
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                description: Bad request
+                $ref: "#/components/schemas/def-0"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                description: Unauthorized
+                $ref: "#/components/schemas/def-0"
+        "500":
+          description: Internal server error
+  /pdf/split/:
+    post:
+      operationId: splitPDFDocuments
+      summary: Splits a PDF document into 2 PDF documents.
+      tags:
+        - PDF
+      description: Splits a PDF document into 2 PDF documents. Returns a zip file
+        containing the 2 documents. Each document is named after the original
+        document with a suffix added to indicate the range of pages it contains.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - options
+                - file
+              properties:
+                options:
+                  required:
+                    - splitPage
+                  type: object
+                  properties:
+                    splitPage:
+                      type: integer
+                      minimum: 1
+                      description: The page number to split the document at (the page will be included
+                        in the first document)
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              options:
+                contentType: application/json
+        required: true
+      security:
+        - apiKey: []
+      x-fern-sdk-group-name:
+        - pdf
+      x-fern-sdk-method-name: split
+      x-fern-availability: generally-available
+      responses:
+        "201":
+          description: ZIP file generated successfully
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                description: Bad request
+                $ref: "#/components/schemas/def-0"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                description: Unauthorized
+                $ref: "#/components/schemas/def-0"
+        "500":
+          description: Internal server error
+  /pdf/extract/:
+    post:
+      operationId: extractPDFDocuments
+      summary: Extract a range of pages from a PDF document.
+      tags:
+        - PDF
+      description: Extracts a range of pages from a PDF document. The start and end
+        pages are included in the extracted document. The extracted document is
+        named after the original document with a suffix added to indicate the
+        range of pages it contains (ex:document_extracted_$start_$end.pdf).
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - options
+                - file
+              properties:
+                options:
+                  required:
+                    - start
+                    - end
+                  type: object
+                  properties:
+                    start:
+                      type: integer
+                      minimum: 1
+                      description: The page number to split the document at
+                    end:
+                      type: integer
+                      minimum: 1
+                      description: The page number to split the document at
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              options:
+                contentType: application/json
+        required: true
+      security:
+        - apiKey: []
+      x-fern-sdk-group-name:
+        - pdf
+      x-fern-sdk-method-name: extract
+      x-fern-availability: generally-available
+      responses:
+        "201":
+          description: Extracted PDF file generated successfully
           content:
             application/pdf:
               schema:
