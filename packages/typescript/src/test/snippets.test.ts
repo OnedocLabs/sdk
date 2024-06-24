@@ -277,9 +277,9 @@ describe("node", () => {
         fs.createWriteStream("./result_extract.pdf"),
       );
       expect(extractStream).toBeInstanceOf(Readable);
-      console.log("Split successful. Zip Stream ready.");
+      console.log("Extraction successful.Stream ready.");
     } catch (error) {
-      console.error("Error during PDF splitting:", error);
+      console.error("Error during PDF extraction:", error);
     }
   });
 });
