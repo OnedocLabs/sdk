@@ -213,7 +213,6 @@ describe("node", () => {
 
     try {
       const splitRequest = {
-        //
         options: {
           splitPage: 1,
         },
@@ -252,7 +251,6 @@ describe("node", () => {
 
     try {
       const extractRequest = {
-        //
         options: {
           start: 1,
           end: 1,
