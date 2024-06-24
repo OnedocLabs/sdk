@@ -20,6 +20,7 @@
     "@types/eslint": "^8.56.6",
     "@types/eslint__js": "^8.42.3",
     "@types/eslint-config-prettier": "^6.11.3",
+    "@types/glob": "^8.1.0",
     "@types/mime": "^3.0.4",
     "@types/randomstring": "^1.1.12",
     "@vitest/browser": "^1.6.0",

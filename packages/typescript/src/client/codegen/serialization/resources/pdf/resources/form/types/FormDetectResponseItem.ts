@@ -8,7 +8,8 @@ import * as core from "../../../../../../core";
 import { FormDetectResponseItemIsChecked } from "./FormDetectResponseItemIsChecked";
 import { FormDetectResponseItemIsEditable } from "./FormDetectResponseItemIsEditable";
 import { FormDetectResponseItemIsMutuallyExclusive } from "./FormDetectResponseItemIsMutuallyExclusive";
-import { FormDetectResponseItemDefaultValue } from "./FormDetectResponseItemDefaultValue";
+import { FormDetectResponseItemIsCombed } from "./FormDetectResponseItemIsCombed";
+import { FormDetectResponseItemType } from "./FormDetectResponseItemType";
 
 export const FormDetectResponseItem: core.serialization.Schema<
     serializers.pdf.FormDetectResponseItem.Raw,
@@ -17,7 +18,8 @@ export const FormDetectResponseItem: core.serialization.Schema<
     FormDetectResponseItemIsChecked,
     FormDetectResponseItemIsEditable,
     FormDetectResponseItemIsMutuallyExclusive,
-    FormDetectResponseItemDefaultValue,
+    FormDetectResponseItemIsCombed,
+    FormDetectResponseItemType,
 ]);
 
 export declare namespace FormDetectResponseItem {
@@ -25,5 +27,6 @@ export declare namespace FormDetectResponseItem {
         | FormDetectResponseItemIsChecked.Raw
         | FormDetectResponseItemIsEditable.Raw
         | FormDetectResponseItemIsMutuallyExclusive.Raw
-        | FormDetectResponseItemDefaultValue.Raw;
+        | FormDetectResponseItemIsCombed.Raw
+        | FormDetectResponseItemType.Raw;
 }
