@@ -282,4 +282,35 @@ describe("node", () => {
       console.error("Error during PDF extraction:", error);
     }
   });
+
+  it.skipIf(NODE_VERSION < 20)("Insert PDFs should work", async () => {
+    const ff = new FileforgeClient({
+      apiKey: process.env.FILEFORGE_API_KEY,
+    });
+
+    try {
+      const pdfFiles = [
+        fs.createReadStream(__dirname + "/pdf1.pdf"),
+        fs.createReadStream(__dirname + "/pdf2.pdf"),
+      ];
+      const insertPDFStream = await ff.pdf.insert(
+        pdfFiles,
+        {
+          options: {
+            // Specify insert options if any
+            insertPage: 1,
+          },
+        },
+        {
+          timeoutInSeconds: 60,
+        },
+      );
+      insertPDFStream.pipe(fs.createWriteStream("./result_insert.pdf"));
+      console.log("PDF inserted successfully. Stream ready.");
+      expect(insertPDFStream).toBeInstanceOf(Readable);
+    } catch (error) {
+      console.error("Error during PDF insertion:", error);
+      throw error;
+    }
+  });
 });
