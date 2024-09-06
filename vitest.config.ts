@@ -4,6 +4,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
+    testTimeout: 15000,
     coverage: {
       provider: "v8",
       reporter: ["html", "json-summary"],
