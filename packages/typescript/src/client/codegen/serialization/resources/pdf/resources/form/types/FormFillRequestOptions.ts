@@ -11,11 +11,13 @@ export const FormFillRequestOptions: core.serialization.ObjectSchema<
     serializers.pdf.FormFillRequestOptions.Raw,
     Fileforge.pdf.FormFillRequestOptions
 > = core.serialization.object({
+    flattenForm: core.serialization.boolean().optional(),
     fields: core.serialization.list(FormFillRequestOptionsFieldsItem),
 });
 
 export declare namespace FormFillRequestOptions {
     interface Raw {
+        flattenForm?: boolean | null;
         fields: FormFillRequestOptionsFieldsItem.Raw[];
     }
 }

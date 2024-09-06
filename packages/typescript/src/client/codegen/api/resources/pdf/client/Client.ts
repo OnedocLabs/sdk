@@ -321,6 +321,258 @@ export class Pdf {
         }
     }
 
+    /**
+     * Splits a PDF document into 2 PDF documents. Returns a zip file containing the 2 documents. Each document is named after the original document with a suffix added to indicate the range of pages it contains.
+     * @throws {@link Fileforge.BadRequestError}
+     * @throws {@link Fileforge.UnauthorizedError}
+     * @throws {@link Fileforge.InternalServerError}
+     */
+    public async split(
+        file: File | fs.ReadStream,
+        request: Fileforge.PdfSplitRequest,
+        requestOptions?: Pdf.RequestOptions
+    ): Promise<stream.Readable> {
+        const _request = new core.FormDataWrapper();
+        await _request.append("options", JSON.stringify(request.options));
+        await _request.append("file", file);
+        const _maybeEncodedRequest = _request.getRequest();
+        const _response = await core.fetcher<stream.Readable>({
+            url: urlJoin(
+                (await core.Supplier.get(this._options.environment)) ?? environments.FileforgeEnvironment.Default,
+                "pdf/split/"
+            ),
+            method: "POST",
+            headers: {
+                "X-Fern-Language": "JavaScript",
+                "X-Fern-Runtime": core.RUNTIME.type,
+                "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...(await this._getCustomAuthorizationHeaders()),
+                ...(await _maybeEncodedRequest.getHeaders()),
+            },
+            body: await _maybeEncodedRequest.getBody(),
+            responseType: "streaming",
+            timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
+            maxRetries: requestOptions?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+        });
+        if (_response.ok) {
+            return _response.body;
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new Fileforge.BadRequestError(
+                        await serializers.ErrorSchema.parseOrThrow(_response.error.body, {
+                            unrecognizedObjectKeys: "passthrough",
+                            allowUnrecognizedUnionMembers: true,
+                            allowUnrecognizedEnumValues: true,
+                            breadcrumbsPrefix: ["response"],
+                        })
+                    );
+                case 401:
+                    throw new Fileforge.UnauthorizedError(
+                        await serializers.ErrorSchema.parseOrThrow(_response.error.body, {
+                            unrecognizedObjectKeys: "passthrough",
+                            allowUnrecognizedUnionMembers: true,
+                            allowUnrecognizedEnumValues: true,
+                            breadcrumbsPrefix: ["response"],
+                        })
+                    );
+                case 500:
+                    throw new Fileforge.InternalServerError(_response.error.body);
+                default:
+                    throw new errors.FileforgeError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.FileforgeError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                });
+            case "timeout":
+                throw new errors.FileforgeTimeoutError();
+            case "unknown":
+                throw new errors.FileforgeError({
+                    message: _response.error.errorMessage,
+                });
+        }
+    }
+
+    /**
+     * Extracts a range of pages from a PDF document. The start and end pages are included in the extracted document. The extracted document is named after the original document with a suffix added to indicate the range of pages it contains (ex:document_extracted\_\$start\_\$end.pdf).
+     * @throws {@link Fileforge.BadRequestError}
+     * @throws {@link Fileforge.UnauthorizedError}
+     * @throws {@link Fileforge.InternalServerError}
+     */
+    public async extract(
+        file: File | fs.ReadStream,
+        request: Fileforge.PdfExtractRequest,
+        requestOptions?: Pdf.RequestOptions
+    ): Promise<stream.Readable> {
+        const _request = new core.FormDataWrapper();
+        await _request.append("options", JSON.stringify(request.options));
+        await _request.append("file", file);
+        const _maybeEncodedRequest = _request.getRequest();
+        const _response = await core.fetcher<stream.Readable>({
+            url: urlJoin(
+                (await core.Supplier.get(this._options.environment)) ?? environments.FileforgeEnvironment.Default,
+                "pdf/extract/"
+            ),
+            method: "POST",
+            headers: {
+                "X-Fern-Language": "JavaScript",
+                "X-Fern-Runtime": core.RUNTIME.type,
+                "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...(await this._getCustomAuthorizationHeaders()),
+                ...(await _maybeEncodedRequest.getHeaders()),
+            },
+            body: await _maybeEncodedRequest.getBody(),
+            responseType: "streaming",
+            timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
+            maxRetries: requestOptions?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+        });
+        if (_response.ok) {
+            return _response.body;
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new Fileforge.BadRequestError(
+                        await serializers.ErrorSchema.parseOrThrow(_response.error.body, {
+                            unrecognizedObjectKeys: "passthrough",
+                            allowUnrecognizedUnionMembers: true,
+                            allowUnrecognizedEnumValues: true,
+                            breadcrumbsPrefix: ["response"],
+                        })
+                    );
+                case 401:
+                    throw new Fileforge.UnauthorizedError(
+                        await serializers.ErrorSchema.parseOrThrow(_response.error.body, {
+                            unrecognizedObjectKeys: "passthrough",
+                            allowUnrecognizedUnionMembers: true,
+                            allowUnrecognizedEnumValues: true,
+                            breadcrumbsPrefix: ["response"],
+                        })
+                    );
+                case 500:
+                    throw new Fileforge.InternalServerError(_response.error.body);
+                default:
+                    throw new errors.FileforgeError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.FileforgeError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                });
+            case "timeout":
+                throw new errors.FileforgeTimeoutError();
+            case "unknown":
+                throw new errors.FileforgeError({
+                    message: _response.error.errorMessage,
+                });
+        }
+    }
+
+    /**
+     * Insert a PDF document into another PDF document at a specified page. The inserted document is named after the original document with a suffix added to indicate the range of pages it contains (ex:document_inserted\_\$insertPage\_\$document2.pdf). Note: The first document is the parent document and the second document is the document to be inserted.
+     * @throws {@link Fileforge.BadRequestError}
+     * @throws {@link Fileforge.UnauthorizedError}
+     * @throws {@link Fileforge.InternalServerError}
+     */
+    public async insert(
+        files: File[] | fs.ReadStream[],
+        request: Fileforge.PdfInsertRequest,
+        requestOptions?: Pdf.RequestOptions
+    ): Promise<stream.Readable> {
+        const _request = new core.FormDataWrapper();
+        await _request.append("options", JSON.stringify(request.options));
+        for (const _file of files) {
+            await _request.append("files", _file);
+        }
+
+        const _maybeEncodedRequest = _request.getRequest();
+        const _response = await core.fetcher<stream.Readable>({
+            url: urlJoin(
+                (await core.Supplier.get(this._options.environment)) ?? environments.FileforgeEnvironment.Default,
+                "pdf/insert/"
+            ),
+            method: "POST",
+            headers: {
+                "X-Fern-Language": "JavaScript",
+                "X-Fern-Runtime": core.RUNTIME.type,
+                "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...(await this._getCustomAuthorizationHeaders()),
+                ...(await _maybeEncodedRequest.getHeaders()),
+            },
+            body: await _maybeEncodedRequest.getBody(),
+            responseType: "streaming",
+            timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
+            maxRetries: requestOptions?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+        });
+        if (_response.ok) {
+            return _response.body;
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new Fileforge.BadRequestError(
+                        await serializers.ErrorSchema.parseOrThrow(_response.error.body, {
+                            unrecognizedObjectKeys: "passthrough",
+                            allowUnrecognizedUnionMembers: true,
+                            allowUnrecognizedEnumValues: true,
+                            breadcrumbsPrefix: ["response"],
+                        })
+                    );
+                case 401:
+                    throw new Fileforge.UnauthorizedError(
+                        await serializers.ErrorSchema.parseOrThrow(_response.error.body, {
+                            unrecognizedObjectKeys: "passthrough",
+                            allowUnrecognizedUnionMembers: true,
+                            allowUnrecognizedEnumValues: true,
+                            breadcrumbsPrefix: ["response"],
+                        })
+                    );
+                case 500:
+                    throw new Fileforge.InternalServerError(_response.error.body);
+                default:
+                    throw new errors.FileforgeError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.FileforgeError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                });
+            case "timeout":
+                throw new errors.FileforgeTimeoutError();
+            case "unknown":
+                throw new errors.FileforgeError({
+                    message: _response.error.errorMessage,
+                });
+        }
+    }
+
     protected _form: Form | undefined;
 
     public get form(): Form {

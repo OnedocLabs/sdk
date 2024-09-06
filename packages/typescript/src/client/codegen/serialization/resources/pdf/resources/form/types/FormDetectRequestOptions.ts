@@ -5,12 +5,17 @@
 import * as serializers from "../../../../../index";
 import * as Fileforge from "../../../../../../api/index";
 import * as core from "../../../../../../core";
+import { FormDetectRequestOptionsAiDetection } from "./FormDetectRequestOptionsAiDetection";
 
 export const FormDetectRequestOptions: core.serialization.ObjectSchema<
     serializers.pdf.FormDetectRequestOptions.Raw,
     Fileforge.pdf.FormDetectRequestOptions
-> = core.serialization.object({});
+> = core.serialization.object({
+    aiDetection: FormDetectRequestOptionsAiDetection.optional(),
+});
 
 export declare namespace FormDetectRequestOptions {
-    interface Raw {}
+    interface Raw {
+        aiDetection?: FormDetectRequestOptionsAiDetection.Raw | null;
+    }
 }

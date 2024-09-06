@@ -9,8 +9,18 @@ import * as core from "../../../../core";
 export const PdfMergeRequestOptions: core.serialization.ObjectSchema<
     serializers.PdfMergeRequestOptions.Raw,
     Fileforge.PdfMergeRequestOptions
-> = core.serialization.object({});
+> = core.serialization.object({
+    host: core.serialization.boolean().optional(),
+    expiresAt: core.serialization.date().optional(),
+    fileName: core.serialization.string().optional(),
+    allowViewing: core.serialization.boolean().optional(),
+});
 
 export declare namespace PdfMergeRequestOptions {
-    interface Raw {}
+    interface Raw {
+        host?: boolean | null;
+        expiresAt?: string | null;
+        fileName?: string | null;
+        allowViewing?: boolean | null;
+    }
 }

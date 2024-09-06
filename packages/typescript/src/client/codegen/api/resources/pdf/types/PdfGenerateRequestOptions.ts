@@ -10,8 +10,10 @@ export interface PdfGenerateRequestOptions {
     test?: boolean;
     /** If enabled, the document will be hosted by FileForge and a presigned URL will be returned. */
     host?: boolean;
-    /** If host is enabled, the expiration date of the presigned URL. Defaults to 7 days from now. Cannot exceed 7 days from now. */
+    /** If host is enabled, the expiration date of the presigned URL. Defaults to 7 days from now. If more than 7 days, the document will be hosted for a monthly fee. */
     expiresAt?: Date;
     /** The name of the generated PDF file. Defaults to document. The file name should not contain extensions nor path traversals. */
     fileName?: string;
+    /** If enabled, the document will be viewable in the web app. Defaults to false. This may go against the privacy policy of your application. */
+    allowViewing?: boolean;
 }

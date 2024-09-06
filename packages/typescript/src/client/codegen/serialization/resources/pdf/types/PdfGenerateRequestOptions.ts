@@ -14,6 +14,7 @@ export const PdfGenerateRequestOptions: core.serialization.ObjectSchema<
     host: core.serialization.boolean().optional(),
     expiresAt: core.serialization.date().optional(),
     fileName: core.serialization.string().optional(),
+    allowViewing: core.serialization.boolean().optional(),
 });
 
 export declare namespace PdfGenerateRequestOptions {
@@ -22,5 +23,6 @@ export declare namespace PdfGenerateRequestOptions {
         host?: boolean | null;
         expiresAt?: string | null;
         fileName?: string | null;
+        allowViewing?: boolean | null;
     }
 }

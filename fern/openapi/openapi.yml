@@ -33,21 +33,6 @@ components:
           example: Bad request
       title: ErrorSchema
 paths:
-  /status/:
-    get:
-      operationId: getStatus
-      description: Get the status of the API
-      x-fern-availability: generally-available
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
   /pdf/docx/:
     post:
       operationId: convertDOCXtoPDF
@@ -223,13 +208,19 @@ paths:
                       type: string
                       format: date-time
                       description: If host is enabled, the expiration date of the presigned URL.
-                        Defaults to 7 days from now. Cannot exceed 7 days from
-                        now.
+                        Defaults to 7 days from now. If more than 7 days, the
+                        document will be hosted for a monthly fee.
                     fileName:
                       type: string
                       description: The name of the generated PDF file. Defaults to document. The file
                         name should not contain extensions nor path traversals.
                       default: document
+                    allowViewing:
+                      type: boolean
+                      description: If enabled, the document will be viewable in the web app. Defaults
+                        to false. This may go against the privacy policy of your
+                        application.
+                      default: false
                 files:
                   description: >-
                     Files to generate the PDF document from.
@@ -309,6 +300,7 @@ paths:
   /pdf/merge/:
     post:
       operationId: mergePDFDocuments
+      summary: Merges multiple PDF documents into a single PDF document.
       tags:
         - PDF
       description: Merges multiple PDF documents into a single PDF document.
@@ -322,7 +314,29 @@ paths:
               properties:
                 options:
                   type: object
-                  properties: {}
+                  properties:
+                    host:
+                      type: boolean
+                      description: If enabled, the document will be hosted by FileForge and a
+                        presigned URL will be returned.
+                      default: false
+                    expiresAt:
+                      type: string
+                      format: date-time
+                      description: If host is enabled, the expiration date of the presigned URL.
+                        Defaults to 7 days from now. If more than 7 days, the
+                        document will be hosted for a monthly fee.
+                    fileName:
+                      type: string
+                      description: The name of the generated PDF file. Defaults to document. The file
+                        name should not contain extensions nor path traversals.
+                      default: document
+                    allowViewing:
+                      type: boolean
+                      description: If enabled, the document will be viewable in the web app. Defaults
+                        to false. This may go against the privacy policy of your
+                        application.
+                      default: false
                 files:
                   allOf:
                     - {}
@@ -348,6 +362,16 @@ paths:
               schema:
                 type: string
                 format: binary
+            application/json:
+              schema:
+                type: object
+                required:
+                  - url
+                properties:
+                  url:
+                    type: string
+                    format: uri
+                    description: URL to the merged PDF document
         "400":
           description: Bad request
           content:
@@ -384,7 +408,15 @@ paths:
               properties:
                 options:
                   type: object
-                  properties: {}
+                  properties:
+                    aiDetection:
+                      type: object
+                      properties:
+                        enable:
+                          type: boolean
+                          default: false
+                        limit:
+                          type: number
                 file:
                   type: string
                   format: binary
@@ -416,6 +448,16 @@ paths:
                       type: boolean
                     readOnly:
                       type: boolean
+                    aiDetectedName:
+                      type: object
+                      required:
+                        - name
+                        - score
+                      properties:
+                        name:
+                          type: string
+                        score:
+                          type: number
                     locations:
                       type: array
                       items:
@@ -514,6 +556,16 @@ paths:
                           type: number
                       required:
                         - type
+                    - type: object
+                      properties:
+                        type:
+                          type: string
+                          enum:
+                            - PDFSignature
+                        defaultValue:
+                          type: string
+                      required:
+                        - type
         "400":
           description: Bad request
           content:
@@ -610,6 +662,11 @@ paths:
                   required:
                     - fields
                   properties:
+                    flattenForm:
+                      type: boolean
+                      description: Flatten the form fields after filling them. This will make the PDF
+                        form uneditable.
+                      default: false
                     fields:
                       type: array
                       description: Fields to fill or change in the PDF document.
@@ -733,11 +790,232 @@ paths:
                 $ref: "#/components/schemas/def-0"
         "500":
           description: Internal server error
+  /pdf/split/:
+    post:
+      operationId: splitPDFDocuments
+      summary: Splits a PDF document into 2 PDF documents.
+      tags:
+        - PDF
+      description: Splits a PDF document into 2 PDF documents. Returns a zip file
+        containing the 2 documents. Each document is named after the original
+        document with a suffix added to indicate the range of pages it contains.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - options
+                - file
+              properties:
+                options:
+                  required:
+                    - splitPage
+                  type: object
+                  properties:
+                    splitPage:
+                      type: integer
+                      minimum: 1
+                      description: The page number to split the document at (the page will be included
+                        in the first document)
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              options:
+                contentType: application/json
+        required: true
+      security:
+        - apiKey: []
+      x-fern-sdk-group-name:
+        - pdf
+      x-fern-sdk-method-name: split
+      x-fern-availability: generally-available
+      responses:
+        "201":
+          description: ZIP file generated successfully
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                description: Bad request
+                $ref: "#/components/schemas/def-0"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                description: Unauthorized
+                $ref: "#/components/schemas/def-0"
+        "500":
+          description: Internal server error
+  /pdf/extract/:
+    post:
+      operationId: extractPDFDocuments
+      summary: Extract a range of pages from a PDF document.
+      tags:
+        - PDF
+      description: Extracts a range of pages from a PDF document. The start and end
+        pages are included in the extracted document. The extracted document is
+        named after the original document with a suffix added to indicate the
+        range of pages it contains (ex:document\_extracted\_\$start\_\$end.pdf).
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - options
+                - file
+              properties:
+                options:
+                  required:
+                    - start
+                    - end
+                  type: object
+                  properties:
+                    start:
+                      type: integer
+                      minimum: 1
+                      description: The page number to split the document at
+                    end:
+                      type: integer
+                      minimum: 1
+                      description: The page number to split the document at
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              options:
+                contentType: application/json
+        required: true
+      security:
+        - apiKey: []
+      x-fern-sdk-group-name:
+        - pdf
+      x-fern-sdk-method-name: extract
+      x-fern-availability: generally-available
+      responses:
+        "201":
+          description: Extracted PDF file generated successfully
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                description: Bad request
+                $ref: "#/components/schemas/def-0"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                description: Unauthorized
+                $ref: "#/components/schemas/def-0"
+        "500":
+          description: Internal server error
+  /pdf/insert/:
+    post:
+      operationId: insertPDFDocuments
+      summary: Insert a PDF document into another PDF document at a specified page.
+      tags:
+        - PDF
+      description: "Insert a PDF document into another PDF document at a specified
+        page. The inserted document is named after the original document with a
+        suffix added to indicate the range of pages it contains
+        (ex:document\\_inserted\\_\\$insertPage\\_\\$document2.pdf). Note: The
+        first document is the parent document and the second document is the
+        document to be inserted."
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - options
+                - files
+              properties:
+                options:
+                  required:
+                    - insertPage
+                  type: object
+                  properties:
+                    insertPage:
+                      type: integer
+                      minimum: 1
+                      description: The page number to insert the document at
+                files:
+                  allOf:
+                    - {}
+                    - type: array
+                      items:
+                        type: string
+                        format: binary
+            encoding:
+              options:
+                contentType: application/json
+        required: true
+      security:
+        - apiKey: []
+      x-fern-sdk-group-name:
+        - pdf
+      x-fern-sdk-method-name: insert
+      x-fern-availability: generally-available
+      responses:
+        "201":
+          description: PDF file inserted successfully
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                description: Bad request
+                $ref: "#/components/schemas/def-0"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                description: Unauthorized
+                $ref: "#/components/schemas/def-0"
+        "500":
+          description: Internal server error
+  /status/:
+    get:
+      operationId: getStatus
+      description: Get the status of the API
+      x-fern-availability: generally-available
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
 servers:
   - url: https://api.fileforge.com
-    description: Tunnel server
-  - url: http://localhost:3000
-    description: Development server
+    description: Global Server
+  - url: https://us-west-1.api.fileforge.com
+    description: Regional Server
 tags:
   - name: PDF
     description: PDF operations

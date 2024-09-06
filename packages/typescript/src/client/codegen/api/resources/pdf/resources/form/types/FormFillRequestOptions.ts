@@ -5,6 +5,8 @@
 import * as Fileforge from "../../../../../index";
 
 export interface FormFillRequestOptions {
+    /** Flatten the form fields after filling them. This will make the PDF form uneditable. */
+    flattenForm?: boolean;
     /** Fields to fill or change in the PDF document. */
     fields: Fileforge.pdf.FormFillRequestOptionsFieldsItem[];
 }
